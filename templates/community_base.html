@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="community-container">
+    <aside>
+        <h3 style="color: white; text-align: center; margin-bottom: 1.5rem; font-size: 1.2rem;">
+            📚 게시판 메뉴
+        </h3>
+        <ul>
+            <li>
+                <a href="{% url 'post_list' board_type='development' %}">
+                    🛠️ 개발과정
+                    <small style="display: block; font-size: 0.8rem; margin-top: 0.3rem; opacity: 0.9;">
+                        게임 개발 일지
+                    </small>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'post_list' board_type='free' %}">
+                    🎪 시끌시끌
+                    <small style="display: block; font-size: 0.8rem; margin-top: 0.3rem; opacity: 0.9;">
+                        자유로운 이야기
+                    </small>
+                </a>
+            </li>
+        </ul>
+        
+        <!-- 추가 정보 박스 -->
+        <div style="margin-top: 2rem; padding: 1rem; background: rgba(255,255,255,0.1); border-radius: 10px; text-align: center;">
+            <p style="color: white; font-size: 0.9rem; margin-bottom: 0.5rem;">💡 Tip</p>
+            <p style="color: white; font-size: 0.8rem; line-height: 1.4;">
+                아이디어나 진행상황을<br>
+                자유롭게 공유해보세요!
+            </p>
+        </div>
+    </aside>
+    
+    <section>
+        {% block board_content %}{% endblock %}
+    </section>
+</div>
+
+<style>
+/* 커뮤니티 전용 스타일 추가 */
+.community-container aside a small {
+    transition: all 0.3s ease;
+}
+
+.community-container aside a:hover small {
+    transform: translateY(-2px);
+}
+
+/* 반응형 개선 */
+@media (max-width: 768px) {
+    .community-container aside ul {
+        justify-content: space-around;
+    }
+    
+    .community-container aside ul li a {
+        padding: 0.8rem;
+        text-align: center;
+        min-width: 120px;
+    }
+    
+    .community-container aside ul li a small {
+        display: none;
+    }
+}
+</style>
+{% endblock %}

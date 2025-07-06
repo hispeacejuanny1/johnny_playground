@@ -1,0 +1,320 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<!-- number_bingo.html -->
+
+<div style="display: flex; flex-direction: row; justify-content: center; align-items: flex-start; min-height: 80vh;">
+    <!-- 사이드바 -->
+    {% include "games/english_sidebar.html" %}
+    <!-- 메인 게임 영역 -->
+    <div style="flex: 1; display: flex; justify-content: center;">
+        <div class="game-container">
+            <h1>🎯 영어 숫자 빙고</h1>
+            <p class="subtitle">친구들과 함께 즐기는 영어 학습 게임!</p>
+            
+            <div class="instructions">
+                <h3>🎮 게임 방법</h3>
+                <ul>
+                    <li>🔄 "다음 숫자" 버튼을 누르면 영어로 숫자가 나와요</li>
+                    <li>🔍 그 숫자를 빙고판에서 찾아서 클릭하세요</li>
+                    <li>✅ 가로, 세로, 대각선 중 한 줄을 완성하면 빙고!</li>
+                    <li>👫 친구들과 함께 누가 먼저 빙고를 만드나 경쟁해보세요</li>
+                </ul>
+            </div>
+            
+            <div class="current-number" id="currentNumber">
+                🎲 "다음 숫자" 버튼을 눌러 게임을 시작하세요!
+            </div>
+            
+            <div class="bingo-board" id="bingoBoard">
+                <!-- 빙고판이 여기에 생성됩니다 -->
+            </div>
+            
+            <div class="controls">
+                <button id="nextNumberBtn" onclick="drawNextNumber()">🎲 다음 숫자</button>
+                <button id="newGameBtn" onclick="newGame()">🔄 새 게임</button>
+            </div>
+            
+            <div class="game-info">
+                <strong>불린 숫자: <span id="calledCount">0</span>개</strong>
+            </div>
+            
+            <div class="called-numbers">
+                <strong>🔊 지금까지 불린 숫자들:</strong>
+                <div id="calledNumbersList"></div>
+            </div>
+            
+            <div id="bingoMessage" class="bingo-message" style="display: none;">
+                🎉 빙고! 축하해요! 🎉
+            </div>
+        </div>
+
+        <style>
+            /* 게임 전용 스타일 */
+            .game-container {
+                background: white;
+                border-radius: 20px;
+                padding: 30px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+                max-width: 900px;
+                width: 100%;
+                text-align: center;
+                margin-bottom: 2rem;
+            }
+            h1 { color: #4a5568; margin-bottom: 10px; font-size: 2.5em; }
+            .subtitle { color: #718096; margin-bottom: 30px; font-size: 1.2em; }
+            .current-number {
+                background: linear-gradient(45deg, #ff6b6b, #ffa726);
+                color: white;
+                padding: 20px;
+                border-radius: 15px;
+                margin: 20px 0;
+                font-size: 1.8em;
+                font-weight: bold;
+                min-height: 60px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .bingo-board {
+                display: grid;
+                grid-template-columns: repeat(5, 1fr);
+                gap: 8px;
+                margin: 20px 0;
+                max-width: 400px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            .cell {
+                width: 60px; height: 60px;
+                border: 3px solid #e2e8f0;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.2em;
+                font-weight: bold;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                background: white;
+                color: #4a5568;
+            }
+            .cell:hover {
+                transform: scale(1.05);
+                border-color: #667eea;
+            }
+            .cell.marked {
+                background: linear-gradient(45deg, #4ecdc4, #44a08d);
+                color: white;
+                border-color: #4ecdc4;
+                transform: scale(0.95);
+            }
+            .cell.just-marked { animation: pulse 0.6s ease-in-out; }
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.2); }
+                100% { transform: scale(0.95); }
+            }
+            .controls { margin: 20px 0; }
+            button {
+                background: linear-gradient(45deg, #667eea, #764ba2);
+                color: white;
+                border: none;
+                padding: 15px 30px;
+                border-radius: 25px;
+                font-size: 1.1em;
+                font-weight: bold;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                margin: 5px;
+            }
+            button:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            }
+            button:disabled {
+                background: #cbd5e0;
+                cursor: not-allowed;
+                transform: none;
+            }
+            .game-info {
+                background: #f7fafc;
+                border-radius: 10px;
+                padding: 15px;
+                margin: 20px 0;
+                border-left: 4px solid #667eea;
+            }
+            .called-numbers {
+                margin: 20px 0;
+                padding: 15px;
+                background: #f8f9fa;
+                border-radius: 10px;
+                max-height: 100px;
+                overflow-y: auto;
+            }
+            .number-tag {
+                display: inline-block;
+                background: #e2e8f0;
+                color: #4a5568;
+                padding: 5px 10px;
+                border-radius: 15px;
+                margin: 2px;
+                font-size: 0.9em;
+            }
+            .bingo-message {
+                background: linear-gradient(45deg, #ff6b6b, #ffa726);
+                color: white;
+                padding: 20px;
+                border-radius: 15px;
+                margin: 20px 0;
+                font-size: 1.5em;
+                font-weight: bold;
+                animation: celebration 2s ease-in-out infinite;
+            }
+            @keyframes celebration {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+            }
+            .instructions {
+                text-align: left;
+                background: #e6fffa;
+                padding: 15px;
+                border-radius: 10px;
+                margin: 20px 0;
+                border-left: 4px solid #4ecdc4;
+            }
+            .instructions h3 {
+                color: #2d3748;
+                margin-top: 0;
+            }
+            .instructions ul {
+                color: #4a5568;
+                margin: 10px 0;
+            }
+        </style>
+        <script>
+            // 숫자를 영어로 변환 (100이 넘는 숫자들)
+            const numberToEnglish = {
+                101: "One Hundred One", 102: "One Hundred Two", 103: "One Hundred Three", 
+                104: "One Hundred Four", 105: "One Hundred Five", 106: "One Hundred Six", 
+                107: "One Hundred Seven", 108: "One Hundred Eight", 109: "One Hundred Nine", 
+                110: "One Hundred Ten", 111: "One Hundred Eleven", 112: "One Hundred Twelve", 
+                113: "One Hundred Thirteen", 114: "One Hundred Fourteen", 115: "One Hundred Fifteen",
+                116: "One Hundred Sixteen", 117: "One Hundred Seventeen", 118: "One Hundred Eighteen", 
+                119: "One Hundred Nineteen", 120: "One Hundred Twenty", 121: "One Hundred Twenty One",
+                122: "One Hundred Twenty Two", 123: "One Hundred Twenty Three", 124: "One Hundred Twenty Four",
+                125: "One Hundred Twenty Five"
+            };
+
+            let board = [];
+            let marked = [];
+            let calledNumbers = [];
+            let gameOver = false;
+
+            function newGame() {
+                board = [];
+                marked = [];
+                calledNumbers = [];
+                gameOver = false;
+                createBoard();
+                renderBoard();
+                document.getElementById('currentNumber').textContent = '🎲 "다음 숫자" 버튼을 눌러 게임을 시작하세요!';
+                document.getElementById('calledCount').textContent = '0';
+                document.getElementById('calledNumbersList').innerHTML = '';
+                document.getElementById('bingoMessage').style.display = 'none';
+                document.getElementById('nextNumberBtn').disabled = false;
+            }
+            function createBoard() {
+                let numbers = [];
+                for (let i = 101; i <= 125; i++) numbers.push(i);
+                for (let i = numbers.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
+                }
+                for (let i = 0; i < 5; i++) {
+                    board[i] = [];
+                    marked[i] = [];
+                    for (let j = 0; j < 5; j++) {
+                        board[i][j] = numbers[i * 5 + j];
+                        marked[i][j] = false;
+                    }
+                }
+            }
+            function renderBoard() {
+                const boardElement = document.getElementById('bingoBoard');
+                boardElement.innerHTML = '';
+                for (let i = 0; i < 5; i++) {
+                    for (let j = 0; j < 5; j++) {
+                        const cell = document.createElement('div');
+                        cell.className = 'cell';
+                        cell.textContent = board[i][j];
+                        cell.onclick = () => clickCell(i, j);
+                        if (marked[i][j]) {
+                            cell.classList.add('marked');
+                            cell.textContent = '✅';
+                        }
+                        boardElement.appendChild(cell);
+                    }
+                }
+            }
+            function clickCell(row, col) {
+                if (gameOver || marked[row][col]) return;
+                if (calledNumbers.length > 0) {
+                    const lastCalled = calledNumbers[calledNumbers.length - 1];
+                    if (board[row][col] === lastCalled) {
+                        marked[row][col] = true;
+                        renderBoard();
+                        const cells = document.querySelectorAll('.cell');
+                        const cellIndex = row * 5 + col;
+                        cells[cellIndex].classList.add('just-marked');
+                        setTimeout(() => {
+                            if (checkBingo()) {
+                                document.getElementById('bingoMessage').style.display = 'block';
+                                document.getElementById('nextNumberBtn').disabled = true;
+                                gameOver = true;
+                            }
+                        }, 300);
+                    }
+                }
+            }
+            function drawNextNumber() {
+                if (gameOver) return;
+                const availableNumbers = [];
+                for (let i = 101; i <= 125; i++) {
+                    if (!calledNumbers.includes(i)) {
+                        availableNumbers.push(i);
+                    }
+                }
+                if (availableNumbers.length === 0) {
+                    document.getElementById('currentNumber').textContent = '🎲 모든 숫자가 불렸습니다!';
+                    document.getElementById('nextNumberBtn').disabled = true;
+                    return;
+                }
+                const randomIndex = Math.floor(Math.random() * availableNumbers.length);
+                const number = availableNumbers[randomIndex];
+                calledNumbers.push(number);
+                const english = numberToEnglish[number];
+                document.getElementById('currentNumber').textContent = `🔊 ${english}`;
+                document.getElementById('calledCount').textContent = calledNumbers.length;
+                const calledList = document.getElementById('calledNumbersList');
+                const numberTag = document.createElement('span');
+                numberTag.className = 'number-tag';
+                numberTag.textContent = english;
+                calledList.appendChild(numberTag);
+            }
+            function checkBingo() {
+                for (let i = 0; i < 5; i++) {
+                    if (marked[i].every(cell => cell)) return true;
+                }
+                for (let j = 0; j < 5; j++) {
+                    if (marked.every(row => row[j])) return true;
+                }
+                if (marked.every((row, i) => row[i])) return true;
+                if (marked.every((row, i) => row[4 - i])) return true;
+                return false;
+            }
+            window.onload = function() { newGame(); };
+        </script>
+    </div>
+</div>
+{% endblock %}

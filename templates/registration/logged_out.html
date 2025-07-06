@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}로그아웃 완료 - Johnny's Playground{% endblock %}
+
+{% block content %}
+<div class="message-container">
+    <div class="message-card">
+        <div class="message-header">
+            <div class="message-icon">👋</div>
+            <h1>로그아웃 완료</h1>
+            <p>Johnny's Playground를 이용해 주셔서 감사합니다!</p>
+        </div>
+        
+        <div class="message-content">
+            <div class="success-message">
+                <span class="success-icon">✅</span>
+                <p>안전하게 로그아웃되었습니다.</p>
+            </div>
+            
+            <div class="goodbye-message">
+                <h3>🌟 또 만나요!</h3>
+                <p>Johnny와 함께하는 학습 모험이 언제든지 여러분을 기다리고 있어요.<br>
+                언제든지 다시 돌아와 주세요!</p>
+            </div>
+        </div>
+        
+        <div class="action-buttons">
+            <a href="{% url 'login' %}" class="primary-btn">
+                <span class="btn-icon">🔐</span>
+                다시 로그인
+            </a>
+            <a href="{% url 'home' %}" class="secondary-btn">
+                <span class="btn-icon">🏠</span>
+                홈으로 가기
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+.message-container {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+}
+
+.message-card {
+    background: white;
+    padding: 3rem;
+    border-radius: 25px;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+    animation: slideUp 0.6s ease;
+}
+
+.message-header {
+    margin-bottom: 2.5rem;
+}
+
+.message-icon {
+    font-size: 5rem;
+    margin-bottom: 1.5rem;
+    display: block;
+    animation: wave 2s ease-in-out infinite;
+}
+
+.message-header h1 {
+    color: #333;
+    font-size: 2.2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.message-header p {
+    color: #666;
+    font-size: 1.1rem;
+}
+
+.message-content {
+    margin-bottom: 2.5rem;
+}
+
+.success-message {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    color: #155724;
+    padding: 1.5rem;
+    border-radius: 15px;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    font-weight: 500;
+}
+
+.success-icon {
+    font-size: 1.3rem;
+}
+
+.goodbye-message {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 2rem;
+    border-radius: 15px;
+}
+
+.goodbye-message h3 {
+    color: #333;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.goodbye-message p {
+    color: #666;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.primary-btn,
+.secondary-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 1.5rem;
+    border-radius: 15px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    min-width: 140px;
+    justify-content: center;
+}
+
+.primary-btn {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    color: white;
+}
+
+.primary-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+}
+
+.secondary-btn {
+    background: white;
+    color: #667eea;
+    border: 2px solid #667eea;
+}
+
+.secondary-btn:hover {
+    background: #667eea;
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+}
+
+.btn-icon {
+    font-size: 1.1rem;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes wave {
+    0%, 100% {
+        transform: rotate(0deg);
+    }
+    25% {
+        transform: rotate(-10deg);
+    }
+    75% {
+        transform: rotate(10deg);
+    }
+}
+
+@media (max-width: 480px) {
+    .message-card {
+        padding: 2rem 1.5rem;
+        margin: 1rem;
+    }
+    
+    .message-header h1 {
+        font-size: 1.9rem;
+    }
+    
+    .message-icon {
+        font-size: 4rem;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+    
+    .primary-btn,
+    .secondary-btn {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}

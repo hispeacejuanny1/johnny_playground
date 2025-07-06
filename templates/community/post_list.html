@@ -1,0 +1,339 @@
+{% extends "community_base.html" %}
+
+{% block board_content %}
+<div class="board-header">
+    <h2 class="board-title">{{ board_name }}</h2>
+    <div class="board-actions">
+        <a href="{% url 'post_create' board_type=board_type %}" class="btn btn-primary">
+            <span class="btn-icon">✏️</span>
+            글쓰기
+        </a>
+    </div>
+</div>
+
+<div class="posts-container">
+    {% if posts %}
+        <div class="posts-table">
+            <div class="table-header">
+                <div class="col-number">번호</div>
+                <div class="col-title">제목</div>
+                <div class="col-author">작성자</div>
+                <div class="col-date">작성일</div>
+            </div>
+            {% for post in posts %}
+            <div class="post-row">
+                <div class="col-number">{{ forloop.counter }}</div>
+                <div class="col-title">
+                    <a href="{% url 'post_detail' board_type=board_type pk=post.pk %}" class="post-link">
+                        {{ post.title }}
+                    </a>
+                </div>
+                <div class="col-author">{{ post.author.username }}</div>
+                <div class="col-date">{{ post.created_at|date:"Y-m-d H:i" }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">📝</div>
+            <h3>아직 작성된 글이 없어요</h3>
+            <p>첫 번째 글을 작성해보세요!</p>
+            <a href="{% url 'post_create' board_type=board_type %}" class="btn btn-primary">
+                첫 글 작성하기
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+{% if posts.paginator.num_pages > 1 %}
+<div class="pagination">
+    {% if posts.has_previous %}
+        <a href="?page={{ posts.previous_page_number }}" class="page-btn prev-btn">
+            ← 이전
+        </a>
+    {% endif %}
+    
+    <div class="page-info">
+        <span class="current-page">{{ posts.number }}</span>
+        <span class="page-separator">/</span>
+        <span class="total-pages">{{ posts.paginator.num_pages }}</span>
+    </div>
+    
+    {% if posts.has_next %}
+        <a href="?page={{ posts.next_page_number }}" class="page-btn next-btn">
+            다음 →
+        </a>
+    {% endif %}
+</div>
+{% endif %}
+
+<style>
+.board-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1.5rem 0;
+    border-bottom: 2px solid #f1f3f4;
+}
+
+.board-title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.board-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.5rem;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    color: white;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.btn-icon {
+    font-size: 1rem;
+}
+
+.posts-container {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
+.posts-table {
+    width: 100%;
+}
+
+.table-header {
+    display: grid;
+    grid-template-columns: 80px 1fr 120px 140px;
+    gap: 1rem;
+    padding: 1.5rem 2rem;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    font-weight: 600;
+    color: #333;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.post-row {
+    display: grid;
+    grid-template-columns: 80px 1fr 120px 140px;
+    gap: 1rem;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #f1f3f4;
+    transition: all 0.3s ease;
+    align-items: center;
+}
+
+.post-row:hover {
+    background: #f8f9fa;
+    transform: translateX(5px);
+}
+
+.post-row:last-child {
+    border-bottom: none;
+}
+
+.col-number {
+    text-align: center;
+    color: #666;
+    font-weight: 500;
+}
+
+.col-title {
+    font-weight: 500;
+}
+
+.post-link {
+    color: #333;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: block;
+    padding: 0.5rem 0;
+}
+
+.post-link:hover {
+    color: #667eea;
+    transform: translateX(5px);
+}
+
+.col-author {
+    color: #666;
+    text-align: center;
+}
+
+.col-date {
+    color: #999;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #666;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+    opacity: 0.7;
+}
+
+.empty-state h3 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.empty-state p {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.page-btn {
+    background: white;
+    color: #667eea;
+    padding: 0.8rem 1.5rem;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 500;
+    border: 2px solid #667eea;
+    transition: all 0.3s ease;
+}
+
+.page-btn:hover {
+    background: #667eea;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+}
+
+.page-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: white;
+    padding: 0.8rem 1.5rem;
+    border-radius: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.current-page {
+    font-weight: 600;
+    color: #667eea;
+    font-size: 1.1rem;
+}
+
+.page-separator {
+    color: #ccc;
+    font-weight: 300;
+}
+
+.total-pages {
+    color: #666;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .board-header {
+        flex-direction: column;
+        gap: 1.5rem;
+        text-align: center;
+    }
+    
+    .table-header,
+    .post-row {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+        text-align: center;
+    }
+    
+    .table-header {
+        display: none;
+    }
+    
+    .post-row {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 1.5rem;
+        border-radius: 15px;
+        margin-bottom: 1rem;
+        background: white;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+    
+    .post-row:hover {
+        transform: translateY(-5px);
+    }
+    
+    .col-title {
+        order: 1;
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .col-author,
+    .col-date {
+        order: 2;
+        display: inline-block;
+        margin: 0 1rem;
+    }
+    
+    .col-number {
+        display: none;
+    }
+    
+    .pagination {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .posts-container {
+        padding: 1rem;
+        background: transparent;
+        box-shadow: none;
+    }
+}
+</style>
+{% endblock %}

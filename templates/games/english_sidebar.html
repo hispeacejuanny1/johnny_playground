@@ -1,0 +1,50 @@
+<!-- games/english_sidebar.html -->
+<div class="sidebar-english">
+    <h3>🇺🇸 English Game</h3>
+    <ul class="sidebar-menu">
+        <li><a href="{% url 'number_bingo' %}" class="{% if request.resolver_match.url_name == 'number_bingo' %}active{% endif %}">숫자빙고</a></li>
+        <!-- 다른 영어 게임 추가 가능 -->
+    </ul>
+</div>
+
+<style>
+.sidebar-english {
+    min-width: 200px;
+    max-width: 240px;
+    background: linear-gradient(135deg, #e6e9f0 0%, #eef1f5 100%);
+    border-radius: 18px;
+    padding: 1.5rem 1rem 1rem 1.5rem;
+    margin-right: 2rem;
+    box-shadow: 0 2px 16px rgba(102, 126, 234, 0.08);
+}
+.sidebar-english h3 {
+    color: #667eea;
+    margin-bottom: 1.2rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.sidebar-menu li {
+    margin-bottom: 1rem;
+}
+.sidebar-menu a {
+    display: block;
+    color: #444;
+    background: #fff;
+    padding: 0.65rem 1.1rem;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background 0.2s, color 0.2s;
+}
+.sidebar-menu a.active,
+.sidebar-menu a:hover {
+    background: linear-gradient(45deg, #4ecdc4, #44a08d);
+    color: #fff;
+}
+</style>
