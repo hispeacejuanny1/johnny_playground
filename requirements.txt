@@ -130,7 +130,6 @@ mdit-py-plugins==0.4.2
 mdurl==0.1.2
 mercantile==1.2.1
 mistune==3.0.2
-mkl-fft
 mkl-random
 mkl-service==2.4.0
 ml-dtypes==0.3.2
